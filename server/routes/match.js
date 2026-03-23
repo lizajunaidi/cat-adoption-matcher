@@ -1,5 +1,5 @@
 import express from 'express'
-import { matchCatWithUser } from '../services/gemini.js'
+import { matchCatWithUser } from '../services/claude.js'
 import { getAvailableCats } from '../services/supabase.js'
 
 const router = express.Router()

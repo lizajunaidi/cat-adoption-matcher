@@ -1,6 +1,8 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import Anthropic from '@anthropic-ai/sdk'
 
-const client = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY)
+const client = new Anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY
+})
 
 export const matchCatWithUser = async (answers, cats) => {
     const userProfile = Object.entries(answers)
@@ -23,21 +25,22 @@ export const matchCatWithUser = async (answers, cats) => {
     Respond ONLY with valid JSON in this exact format, no other text:
     {
     "catId": "<the cat's id>",
-    "catName": <the cat's name>",
+    "catName": "<the cat's name>",
     "reason": "<2-3 sentences explaining why this cat is a great match for this specific person>"
     }`
 
-    const model = client.getGenerativeModel({ model: 'gemini-2.0-flash' })
-    const result = await model.generateContent(prompt)
-    const responseText = result.response.text().trim()
+    const message = await client.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 500,
+        messages: [{ role: 'user', content: prompt }]
+    })
+
+    const responseText = message.content[0].text.trim()
 
     const parsed = JSON.parse(responseText)
 
-    const matchedCat = cats.find(c => c.id === parsed.catID)
-
-    if (!matchedCat) {
-        throw new Error(`Claude returned an unknown cat ID: ${parsed.catID}`)
-    }
+    const matchedCat = cats.find(c => c.id === parsed.catId)
+    throw new Error(`Claude returned an unknown cat ID: ${parsed.catId}`)
 
     return {
         cat: matchedCat,
