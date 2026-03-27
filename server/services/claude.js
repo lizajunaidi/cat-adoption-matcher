@@ -40,7 +40,9 @@ export const matchCatWithUser = async (answers, cats) => {
     const parsed = JSON.parse(responseText)
 
     const matchedCat = cats.find(c => c.id === parsed.catId)
-    throw new Error(`Claude returned an unknown cat ID: ${parsed.catId}`)
+    if (!matchedCat) {
+        throw new Error(`Claude returned an unknown cat ID: ${parsed.catId}`)
+    }
 
     return {
         cat: matchedCat,

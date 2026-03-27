@@ -4,7 +4,8 @@ function ResultPage() {
     const location = useLocation()
     const navigate = useNavigate()
     const match = location.state?.match
-    
+    console.log('image url:', match.cat.image_url)
+
     if (!match) {
         return (
             <div>
@@ -17,6 +18,14 @@ function ResultPage() {
     return (
         <div>
             <h1>We found your purrfect match!</h1>
+            <p>{match.cat.name}</p>
+            {match.cat.image_url && (
+                <img
+                    src={match.cat.image_url}
+                    alt={match.cat.name}
+                    style={{ width: '300px', height: '300px', objectFit: 'cover' }}
+                />
+            )}
             <p>{match.cat.breed} | {match.cat.age} years old | {match.cat.energy_level} energy</p>
             <p>{match.cat.personality}</p>
             <h3>Why you're a match</h3>
